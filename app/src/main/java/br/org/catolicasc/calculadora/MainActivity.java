@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,6 +15,25 @@ public class MainActivity extends AppCompatActivity {
     private TextView textOperacaoPendente;
     private String operacaoPendente;
     private Double operando1 = null;
+    private static final String ESTADO_OPERACAO_PENDENTE = "OperacaoPendente";
+    private static final String ESTADO_OPERANDO1 = "Operando1";
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(ESTADO_OPERACAO_PENDENTE, operacaoPendente);
+        if (operando1 != null) {
+            outState.putDouble(ESTADO_OPERANDO1, operando1);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        operacaoPendente = savedInstanceState.getString(ESTADO_OPERACAO_PENDENTE);
+        operando1 = savedInstanceState.getDouble(ESTADO_OPERANDO1);
+        textOperacaoPendente.setText(operacaoPendente);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +109,25 @@ public class MainActivity extends AppCompatActivity {
         buttonMultiplicar.setOnClickListener(listenerOperacao);
         buttonSubtrair.setOnClickListener(listenerOperacao);
         buttonSomar.setOnClickListener(listenerOperacao);
+
+        Button buttonNegar = findViewById(R.id.buttonNegar);
+        buttonNegar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String numero = novoNumero.getText().toString();
+                if (numero.length() == 0){
+                    novoNumero.setText("-");
+                } else {
+                    try {
+                        Double valorDouble = Double.valueOf(numero);
+                        valorDouble *= -1;
+                        novoNumero.setText(valorDouble.toString());
+                    } catch (NumberFormatException e) {
+                        novoNumero.setText("");
+                    }
+                }
+            }
+        });
     }
 
     private void executaOperacao(Double numero, String operacao) {
@@ -127,4 +166,6 @@ public class MainActivity extends AppCompatActivity {
         resultado.setText(operando1.toString());
         novoNumero.setText("");
     }
+
+
 }
